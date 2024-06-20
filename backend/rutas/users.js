@@ -3,7 +3,7 @@ const router = express.Router()
 const User = require('../modelos/users') // importacion del modelo
 
 // metodo get de inicio mi buen
-router.get('/users/get',(req, res) => {
+router.get('/users/get', (req, res) => {
     User.find()
         .then(docs => {
             res.json(docs)
@@ -14,26 +14,80 @@ router.get('/users/get',(req, res) => {
         })
 })
 
-// buscar usuario
-router.get('/users/login',(req,res) => {
-    const userName = req.query.username
-    if (!userName) {
-        return res.status(400).json({error:"no existe parametro de entrada"})
+// con este metodo voy a ver si puedo crear usuarios xd usando post, capaz como  es express se hace con el de DEL
+router.post('/users/add', (req, res) => {
+    const { username, email, pass, avatar } = req.body;
+    if (!username || !pass) {
+        res.status(400).json({ result: "ocupo la contraseña y el username papito" })
+    }
+    const newUser = new User({
+        username,
+        email,
+        pass,
+        avatar
+    })
+    newUser.save()
+        .then(user => {
+            console.log('bien hecho we: ', user)
+            res.status(201).json({ result: "todo bien we" })
+        })
+        .catch(err => {
+            console.error("no se pudo", err)
+            return res.status(500).json({ error: "error interno" })
+        })
+})
+
+// este es el login, esta bastante chido la vdd
+router.get('/users/login', (req, res) => {
+
+    const {username,pass} = req.body
+
+    if (!username || !pass) {
+        return res.status(400).json({ error: "no me diste nada cabron" })
     }
 
-    User.findOne({username:userName})
+    User.findOne({username})
+        .then(user => {
+            if (!user) return res.status(404).json({err:"aver si creas una cuenta o la escribes bien"})
+            user.comparePassword(pass,(err,isMatch) => {
+                if (err) return res.status(500).json({error:"tenemos inconvenientes"})
+                if (!isMatch) return res.status(401).json({error:"aver si te aprendes tu contraseña"})
+                
+                res.json("Todo esxcelente: "+user)
+            })
+        })
+        .catch(err => {
+            res.status(500).json({error:"tenemos inconvenientes"})
+        })
+})
+
+// aqui no conocemos el put mi cabron
+router.post('/users/upd', (req, res) => {
+    User.findOneAndUpdate({ _id: req.body._id }, {
+        username: req.body.username,
+        email: req.body.email,
+        pass: req.body.pass,
+        avatar: req.body.avatar
+    })
     .then(user => {
-        if (!user) {
-            console.log('No existe una cuenta con ese nombre')
-            return res.status(400).json({error:"no hay usuario con ese nombre"})
-        }
-        console.log('tenemos al tonto')
-        res.json(user)
+        res.status(200).json("Todo bien con este usuario: "+user)
     })
     .catch(err => {
-        console.log(err)
-        res.status(500).json({error:"Ocurrio un error"})
-    })
+        console.error(err);
+    });
+})
+
+// para borrar usando post pq no nos gusta el delete
+router.post('/users/del', (req, res) => {
+    User.findOneAndDelete({_id:req.body._id})
+        .then(user => {
+            res.status(202).json({content:"todo excelente"})
+            // res.send('ya quedo')
+        })
+        .catch(err => {
+            res.status(500).json({content:"tenemos problemas we"})
+            // res.send(err)
+        })
 })
 
 module.exports = router
