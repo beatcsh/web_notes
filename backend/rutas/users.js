@@ -41,10 +41,7 @@ router.post('/users/add', (req, res) => {
 router.get('/users/login', (req, res) => {
 
     const {username,pass} = req.body
-
-    if (!username || !pass) {
-        return res.status(400).json({ error: "no me diste nada cabron" })
-    }
+    if (!username || !pass) return res.status(400).json({ error: "no me diste nada cabron" })
 
     User.findOne({username})
         .then(user => {
@@ -60,6 +57,21 @@ router.get('/users/login', (req, res) => {
             res.status(500).json({error:"tenemos inconvenientes"})
         })
 })
+
+// obtener uno, esto nos sirve para verificar el usuario dentro de la app
+router.get('/users/get_one', (req, res) => {
+    User.findOne({ _id: req.body._id })
+        .then(user => {
+            if (!user) {
+                console.log('error, no lo encuentra')
+            }
+            console.log('encontrado' + user)
+            res.json(user)
+        })
+        .catch(err => {
+            console.error(err);
+        });
+});
 
 // aqui no conocemos el put mi cabron
 router.post('/users/upd', (req, res) => {
