@@ -4,7 +4,7 @@ const User = require('../modelos/users') // importacion del modelo
 
 // metodo get de inicio mi buen
 router.get('/users/get', (req, res) => {
-    User.find()
+    User.find() 
         .then(docs => {
             res.json(docs)
         })
@@ -38,25 +38,32 @@ router.post('/users/add', (req, res) => {
 })
 
 // este es el login, esta bastante chido la vdd
-router.get('/users/login', (req, res) => {
+router.post('/users/login', (req, res) => {
+    const { username, pass } = req.body;
+    if (!username || !pass) {
+        return res.status(400).json({ error: "no me diste nada cabron" });
+    }
 
-    const {username,pass} = req.body
-    if (!username || !pass) return res.status(400).json({ error: "no me diste nada cabron" })
-
-    User.findOne({username})
+    User.findOne({ username })
         .then(user => {
-            if (!user) return res.status(404).json({err:"aver si creas una cuenta o la escribes bien"})
-            user.comparePassword(pass,(err,isMatch) => {
-                if (err) return res.status(500).json({error:"tenemos inconvenientes"})
-                if (!isMatch) return res.status(401).json({error:"aver si te aprendes tu contraseña"})
-                
-                res.json("Todo esxcelente: "+user)
-            })
+            if (!user) {
+                return res.status(404).json({ error: "aver si creas una cuenta o la escribes bien" });
+            }
+            user.comparePassword(pass, (err, isMatch) => {
+                if (err) {
+                    return res.status(500).json({ error: "tenemos inconvenientes" });
+                }
+                if (!isMatch) {
+                    return res.status(401).json({ error: "aver si te aprendes tu contraseña" });
+                }
+                res.json({ message: "Todo esxcelente", user });
+                console.log('se pudo')
+            });
         })
         .catch(err => {
-            res.status(500).json({error:"tenemos inconvenientes"})
-        })
-})
+            res.status(500).json({ error: "tenemos inconvenientes" });
+        });
+});
 
 // obtener uno, esto nos sirve para verificar el usuario dentro de la app
 router.get('/users/get_one', (req, res) => {
@@ -81,23 +88,23 @@ router.post('/users/upd', (req, res) => {
         pass: req.body.pass,
         avatar: req.body.avatar
     })
-    .then(user => {
-        res.status(200).json("Todo bien con este usuario: "+user)
-    })
-    .catch(err => {
-        console.error(err);
-    });
+        .then(user => {
+            res.status(200).json("Todo bien con este usuario: " + user)
+        })
+        .catch(err => {
+            console.error(err);
+        });
 })
 
 // para borrar usando post pq no nos gusta el delete
 router.post('/users/del', (req, res) => {
-    User.findOneAndDelete({_id:req.body._id})
+    User.findOneAndDelete({ _id: req.body._id })
         .then(user => {
-            res.status(202).json({content:"todo excelente"})
+            res.status(202).json({ content: "todo excelente" })
             // res.send('ya quedo')
         })
         .catch(err => {
-            res.status(500).json({content:"tenemos problemas we"})
+            res.status(500).json({ content: "tenemos problemas we" })
             // res.send(err)
         })
 })

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
+import axios from 'axios'
 
 function Login() {
-    const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [pass, setPass] = useState('')
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value)
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value)
     }
 
     const handlePasswordChange = (e) => {
@@ -14,12 +15,23 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        log_fun(email, pass);
-      };
+        loginServer(username, pass);
+    };
 
-    function log_fun(email, pass) {
-        alert('los tomo')
+    function loginServer(username, pass) {
+        const user = {
+            username: username,
+            pass: pass
+        }
+        axios.post('api/users/login', user)
+            .then(res => {
+                console.log(res.data)
+            })
+            .catch(err => {
+                console.log(err.response.data.error)
+            });
     }
+
     return (
         <>
             <div className="flex justify-center place-items-center rounded-xl m-4
@@ -28,8 +40,8 @@ function Login() {
                     <h1 className="flex justify-center text-2xl font-bold mb-4 text-blue-900">Notes APP</h1>
                     <form className="grid place-items-center gap-6" onSubmit={handleSubmit}>
                         <input className="md:w-[240px] h-[30px] sm:w[200px] px-2 rounded-lg 
-                                border-2 shadow-md text-sm" type="email" placeholder="@ Email" id="email" name="pass" value={email}
-                            onChange={handleEmailChange}></input>
+                                border-2 shadow-md text-sm" type="text" placeholder="Username" id="username" name="username" value={username}
+                            onChange={handleUsernameChange}></input>
                         <input className="md:w-[240px] h-[30px] sm:w[200px] px-2 rounded-lg 
                                 border-2 shadow-md text-sm" type="password" placeholder="Password" id="pass" name="pass" value={pass}
                             onChange={handlePasswordChange}></input>
