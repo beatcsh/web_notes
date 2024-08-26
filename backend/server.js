@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 
 // conexion a mongo con el archivo de conexion
-const db = require('./conexion/conexion')
+const db = require('./conexion/conexion') 
 
 // importar rutas
 const ruta_notes = require('./rutas/notes')

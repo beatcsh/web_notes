@@ -1,20 +1,18 @@
-import React from 'react';
-import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './components/login';
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Main, LoginView} from "./layouts"
 
 function App() {
   return (
     <>
-      <div className='flex justify-center m-20'>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Login />}></Route>
-          </Routes>
-        </BrowserRouter>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<LoginView />}></Route>
+          <Route path='/notes' element={<Main />}></Route>
+        </Routes>
+      </BrowserRouter>
     </>
-  );
+  )
 }
 
 export default App;

@@ -6,4 +6,4 @@ const db = mongoose.connection
 db.on('connected',() =>{console.log('conectado')})
 db.on('error',() =>{console.log('fallamos')})
 
-module.exports = mongoose
+module.exports = mongoose 

@@ -17,7 +17,7 @@ router.get('/users/get', (req, res) => {
 // con este metodo voy a ver si puedo crear usuarios xd usando post, capaz como  es express se hace con el de DEL
 router.post('/users/add', (req, res) => {
     const { username, email, pass, avatar } = req.body;
-    if (!username || !pass) {
+    if (!username || !pass || !avatar || !email) {
         res.status(400).json({ result: "ocupo la contraseña y el username papito" })
     }
     const newUser = new User({
